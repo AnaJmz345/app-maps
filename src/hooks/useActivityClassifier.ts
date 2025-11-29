@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from "react";
 
 import { activityController } from "../controllers/ActivityController";
 import {
-    AccelerometerData,
-    ActivityLog,
-    ActivityType,
-    LocationData,
-    SessionStats,
+  AccelerometerData,
+  ActivityLog,
+  ActivityType,
+  LocationData,
+  SessionStats,
 } from "../models/ActivityModel";
 import { activityClassifierService } from "../services/ActivityClassifierService";
 import { locationService } from "../services/LocationService";
@@ -117,7 +117,7 @@ export function useActivityClassifier(): UseActivityClassifierReturn {
       handleNewData(location, accData);
     });
 
-    Accelerometer.setUpdateInterval(200); // cada 200 ms
+    Accelerometer.setUpdateInterval(100); // cada 200 ms
   };
 
   // 4) Detener tracking y guardar ruta
@@ -187,6 +187,8 @@ export function useActivityClassifier(): UseActivityClassifierReturn {
     // Clasificar actividad
     const speed = (newLocation ?? location)?.speed ?? 0;
     const mag = (newAcc ?? acceleration)?.magnitude ?? 0;
+    console.log("SPEED:", speed, "ACC:", mag);
+
 
     const act = activityClassifierService.classify(speed, mag);
     const conf = activityClassifierService.confidence(speed, mag);
@@ -203,6 +205,8 @@ export function useActivityClassifier(): UseActivityClassifierReturn {
     };
 
     setActivityLogs((prev) => [...prev, log]);
+
+
   };
 
   return {

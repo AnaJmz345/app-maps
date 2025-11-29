@@ -36,6 +36,11 @@ export class StorageService {
 
     await AsyncStorage.setItem(TOTAL_KEY, JSON.stringify(next));
   }
+
+  async saveAllRoutes(routes: SavedRoute[]) {
+    await AsyncStorage.setItem(ROUTES_KEY, JSON.stringify(routes));
+  }
+
 }
 
 export const storageService = new StorageService();

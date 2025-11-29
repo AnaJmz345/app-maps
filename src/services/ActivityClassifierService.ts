@@ -1,7 +1,7 @@
 import {
-    ActivityType,
-    ClassifierConfig,
-    DEFAULT_CLASSIFIER_CONFIG,
+  ActivityType,
+  ClassifierConfig,
+  DEFAULT_CLASSIFIER_CONFIG,
 } from "../models/ActivityModel";
 
 class ActivityClassifierService {
@@ -15,21 +15,31 @@ class ActivityClassifierService {
     return Math.sqrt(x * x + y * y + z * z);
   }
 
-  classify(speed: number, acc: number): ActivityType {
-    if (speed < 0.3 && acc < this.config.accThresholdLow)
+ classify(speed: number, acc: number): ActivityType {
+    // QUIETO
+    if (acc > 9.6 && acc < 10.2 && speed < 0.3) {
       return ActivityType.IDLE;
+    }
 
-    if (speed >= this.config.vehicleSpeedMin)
+    // VEHÍCULO
+    if (speed >= 5 && acc > 9.6 && acc < 10.2) {
       return ActivityType.VEHICLE;
+    }
 
-    if (speed >= this.config.runSpeedMin || acc > this.config.accThresholdHigh)
-      return ActivityType.RUNNING;
-
-    if (speed >= this.config.walkSpeedMin)
+    // CAMINANDO
+    if (acc >= 10 && acc < 12) {
       return ActivityType.WALKING;
+    }
+
+    // CORRIENDO
+    if (acc >= 12 && acc < 18) {
+      return ActivityType.RUNNING;
+    }
 
     return ActivityType.UNKNOWN;
   }
+
+
 
   confidence(speed: number, acc: number) {
     const s = Math.min(speed / 5, 1);

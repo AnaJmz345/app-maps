@@ -7,16 +7,16 @@ type Props = {
 };
 
 export const SessionStatsCard: React.FC<Props> = ({ stats }) => {
-  const minutes = Math.floor(stats.durationSec / 60);
+ 
 
   return (
     <View style={styles.card}>
       <Text style={styles.title}>Estadísticas de sesión</Text>
 
-      <Row label="Duración" value={`${minutes} min`} />
+      <Row label="Duración" value={`${stats.durationSec} s`} />
       <Row
         label="Distancia"
-        value={`${(stats.distanceMeters / 1000).toFixed(2)} km`}
+        value={`${(stats.distanceMeters)} m`}
       />
       <Row label="Calorías" value={`${stats.calories.toFixed(0)} kcal`} />
       <Row label="Pasos" value={stats.steps.toFixed(0)} />
