@@ -3,6 +3,8 @@ import {
   ClassifierConfig,
   DEFAULT_CLASSIFIER_CONFIG,
 } from "../models/ActivityModel";
+import { logDebug, logError } from "../utils/logger";
+
 
 class ActivityClassifierService {
   private config: ClassifierConfig = DEFAULT_CLASSIFIER_CONFIG;
@@ -16,6 +18,8 @@ class ActivityClassifierService {
   }
 
  classify(speed: number, acc: number): ActivityType {
+    try {
+      logDebug(`Classifier input -> speed:${speed} m/s | acc:${acc}`);
     // QUIETO
     if (acc > 9.6 && acc < 10.2 && speed < 0.3) {
       return ActivityType.IDLE;
@@ -37,6 +41,11 @@ class ActivityClassifierService {
     }
 
     return ActivityType.UNKNOWN;
+    }
+    catch(error){
+      logError("Error clasificando actividad", error);
+      return ActivityType.UNKNOWN;
+    }
   }
 
 

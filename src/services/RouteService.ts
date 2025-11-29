@@ -1,34 +1,52 @@
 import { ActivityLog, SavedRoute, SessionStats } from "../models/ActivityModel";
+import { logDebug, logError, logInfo } from "../utils/logger";
 import { storageService } from "./StorageService";
 
 class RouteService {
+
   async saveRoute(logs: ActivityLog[], stats: SessionStats) {
-    const route: SavedRoute = {
-      id: Date.now().toString(),
-      name: `Ruta ${new Date().toLocaleString()}`,
-      date: new Date().toISOString(),
-      logs,
-      stats,
-    };
+    try {
+      logInfo("Creando objeto de ruta...");
 
-    await storageService.saveRoute(route);
-    await storageService.updateTotals(stats);
+      const route: SavedRoute = {
+        id: Date.now().toString(),
+        name: `Ruta ${new Date().toLocaleString()}`,
+        date: new Date().toISOString(),
+        logs,
+        stats,
+      };
 
-    return route;
+      logDebug(`Ruta creada con id: ${route.id}. Guardando...`);
+
+      await storageService.saveRoute(route);
+      await storageService.updateTotals(stats);
+
+      logInfo(`Ruta guardada correctamente. Total logs: ${logs.length}`);
+
+      return route;
+
+    } catch (error) {
+      logError("Error en saveRoute", error);
+      throw error;
+    }
   }
+
   generateLeafletHtml(route: SavedRoute) {
-    
-    const coords = route.logs
-      .filter((l) => l.location)
-      .map((l) => [l.location!.latitude, l.location!.longitude]);
+    try {
+      logInfo(`Generando HTML de mapa para la ruta: ${route.id}`);
 
-    // Primer punto -> inicio
-    const start = coords[0];
+      const coords = route.logs
+        .filter((l) => l.location)
+        .map((l) => [l.location!.latitude, l.location!.longitude]);
 
-    // Último punto -> fin
-    const end = coords[coords.length - 1];
+      logDebug(`Coordenadas generadas: ${coords.length}`);
 
-    return `
+      // Primer punto -> inicio
+      const start = coords[0];
+      // Último punto -> fin
+      const end = coords[coords.length - 1];
+
+      return `
   <!DOCTYPE html>
   <html>
     <head>
@@ -62,7 +80,7 @@ class RouteService {
         if (coords.length > 0) {
           // Polyline azul
           const poly = L.polyline(coords, {
-            color: '#1e40af',    // AZUL intenso como el del profe
+            color: '#1e40af',
             weight: 5
           }).addTo(map);
 
@@ -90,11 +108,13 @@ class RouteService {
       </script>
     </body>
   </html>
-    `;
+      `;
+
+    } catch (error) {
+      logError("Error generando HTML del mapa en generateLeafletHtml", error);
+      return `<html><body><h1>Error generando mapa</h1></body></html>`;
+    }
   }
-
-
-  
 }
 
 export const routeService = new RouteService();
